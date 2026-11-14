@@ -6,7 +6,7 @@ import { Modal } from "./Modal";
 interface GitHubImportModalProps {
   open: boolean;
   onClose: () => void;
-  onImport: (document: { name: string; content: string }) => void;
+  onImport: (document: { name: string; content: string; repository: string }) => void;
 }
 
 const exampleRepository = "Yxoro/readme-studio";
@@ -31,7 +31,7 @@ export function GitHubImportModal({ open, onClose, onImport }: GitHubImportModal
     try {
       const result = await fetchGitHubReadme(repo);
       if (!openRef.current) return;
-      onImport({ name: result.name, content: result.content });
+      onImport({ name: result.name, content: result.content, repository: result.repo });
       setRepo("");
     } catch (cause) {
       if (!openRef.current) return;

@@ -291,8 +291,12 @@ export default function App() {
   );
 
   const handleGitHubImport = useCallback(
-    (document: { name: string; content: string }) => {
-      docs.createDocument({ name: document.name, content: document.content });
+    (document: { name: string; content: string; repository: string }) => {
+      docs.createDocument({
+        name: document.name,
+        content: document.content,
+        repository: document.repository,
+      });
       setGithubImportOpen(false);
       setView("workspace");
       setTemplatesOpen(false);
@@ -651,7 +655,13 @@ export default function App() {
                     className="flex min-h-0 flex-col border-line bg-white max-xl:absolute max-xl:inset-0 max-xl:z-20 max-xl:shadow-lift xl:w-[44%] xl:min-w-[390px] xl:max-w-[820px] xl:border-l"
                   >
                     <PreviewPanel
+                      key={activeDocument.id}
                       markdown={activeDocument.content}
+                      documentName={activeDocument.name}
+                      repository={activeDocument.repository ?? null}
+                      onRepositoryChange={(repository) =>
+                        docs.updateRepository(activeDocument.id, repository)
+                      }
                       onClose={() => setPreviewOpen(false)}
                     />
                   </aside>

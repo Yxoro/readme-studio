@@ -124,6 +124,7 @@ Nothing is uploaded to a README Studio backend because there is no backend.
 - **Live repository stats** on the home page: GitHub stars, forks, open issues and contributors, with direct links to the contributing guide, good first issues and a new issue.
 - **Table of contents** generated from the document's headings, with GitHub-compatible anchors. Run it again to refresh the existing table.
 - **Import from GitHub** fetches the README of any public repository by `owner/repo` or URL and turns it into a new local document.
+- **GitHub page preview** in the preview panel places the README inside a repository page layout. Link a public repository to load its real description, topics, license and counters; imported READMEs link it automatically.
 
 ## Quick start
 

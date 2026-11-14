@@ -49,7 +49,7 @@ const features: { icon: LucideIcon; title: string; description: string }[] = [
   {
     icon: Eye,
     title: "See it instantly",
-    description: "A GitHub-style preview updates as you write, with syntax highlighting.",
+    description: "Preview rendered Markdown or the full GitHub repository page as you write.",
   },
   {
     icon: ShieldCheck,
@@ -63,8 +63,8 @@ const features: { icon: LucideIcon; title: string; description: string }[] = [
   },
   {
     icon: Github,
-    title: "Start from GitHub",
-    description: "Import the README of any public repository as a new local document.",
+    title: "GitHub, end to end",
+    description: "Import a public README, then link its repository for live stars, topics and license.",
   },
   {
     icon: Sparkles,

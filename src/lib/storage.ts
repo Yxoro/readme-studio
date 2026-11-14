@@ -22,13 +22,24 @@ function isDocument(value: unknown): value is ReadmeDocument {
   );
 }
 
+function normalizeDocument(document: ReadmeDocument): ReadmeDocument {
+  if (typeof document.repository !== "string") {
+    return { ...document, repository: undefined };
+  }
+
+  const repository = document.repository.trim();
+  return { ...document, repository: repository || undefined };
+}
+
 export function loadDocuments(): StorageSnapshot {
   try {
     const raw = window.localStorage.getItem(DOCUMENTS_KEY);
     if (!raw) return { documents: [], activeId: null };
 
     const parsed: unknown = JSON.parse(raw);
-    const documents = Array.isArray(parsed) ? parsed.filter(isDocument) : [];
+    const documents = Array.isArray(parsed)
+      ? parsed.filter(isDocument).map(normalizeDocument)
+      : [];
     const storedActive = window.localStorage.getItem(ACTIVE_KEY);
     const activeId =
       storedActive && documents.some((document) => document.id === storedActive)

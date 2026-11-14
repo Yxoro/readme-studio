@@ -61,6 +61,10 @@ Open a document with at least two headings, then select **Contents** in the edit
 
 Choose **Import from GitHub** on the home page or in My Projects, then enter a public repository as \`owner/repo\` or paste its GitHub URL. The README is fetched through the public GitHub API and becomes a new local document. Nothing is sent to a README Studio server.
 
+## GitHub page preview
+
+Open the preview panel and select **GitHub** to see the current README inside a repository page layout. Link a public repository with **owner/repo** to load its real description, topics, license and counters from the GitHub API. Imported READMEs link their repository automatically. The preview is read-only and never publishes anything.
+
 ## AI assistant
 
 Open **AI** in the top bar to work with an AI editor in a panel beside the document. The assistant uses your own API key and talks directly to an OpenAI-compatible chat completions endpoint.

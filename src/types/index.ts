@@ -10,6 +10,7 @@ export interface ReadmeDocument {
   id: string;
   name: string;
   content: string;
+  repository?: string;
   createdAt: string;
   updatedAt: string;
 }

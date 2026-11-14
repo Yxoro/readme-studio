@@ -1,34 +1,44 @@
 import { useMemo, useState } from "react";
-import { Eye, PanelRightClose, ShieldCheck } from "lucide-react";
+import { Eye, Github, PanelRightClose, ShieldCheck } from "lucide-react";
 import { analyzeReadme } from "../lib/qualityChecker";
 import { LivePreview } from "./LivePreview";
 import { QualityChecker } from "./QualityChecker";
+import { RepoPreview } from "./RepoPreview";
 
 interface PreviewPanelProps {
   markdown: string;
+  documentName: string;
+  repository: string | null;
+  onRepositoryChange: (repository: string | null) => void;
   onClose: () => void;
 }
 
-type PreviewTab = "preview" | "quality";
+type PreviewTab = "preview" | "github" | "quality";
 
-export function PreviewPanel({ markdown, onClose }: PreviewPanelProps) {
-  const [tab, setTab] = useState<PreviewTab>("preview");
+export function PreviewPanel({
+  markdown,
+  documentName,
+  repository,
+  onRepositoryChange,
+  onClose,
+}: PreviewPanelProps) {
+  const [tab, setTab] = useState<PreviewTab>(repository ? "github" : "preview");
   const report = useMemo(() => analyzeReadme(markdown), [markdown]);
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-white">
-      <div className="flex h-12 shrink-0 items-center justify-between border-b border-line px-3">
+      <div className="flex h-12 shrink-0 items-center justify-between gap-2 border-b border-line px-3">
         <div
           role="tablist"
           aria-label="Preview panel"
-          className="inline-flex rounded-lg bg-canvas p-0.5"
+          className="inline-flex min-w-0 overflow-x-auto rounded-lg bg-canvas p-0.5"
         >
           <button
             type="button"
             role="tab"
             aria-selected={tab === "preview"}
             onClick={() => setTab("preview")}
-            className={`inline-flex h-7 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium transition-all ${
+            className={`inline-flex h-7 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium transition-all ${
               tab === "preview" ? "bg-white text-ink shadow-sm" : "text-muted hover:text-ink"
             }`}
           >
@@ -38,9 +48,22 @@ export function PreviewPanel({ markdown, onClose }: PreviewPanelProps) {
           <button
             type="button"
             role="tab"
+            aria-selected={tab === "github"}
+            onClick={() => setTab("github")}
+            title="Preview this README on a GitHub repository page"
+            className={`inline-flex h-7 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium transition-all ${
+              tab === "github" ? "bg-white text-ink shadow-sm" : "text-muted hover:text-ink"
+            }`}
+          >
+            <Github size={13} />
+            GitHub
+          </button>
+          <button
+            type="button"
+            role="tab"
             aria-selected={tab === "quality"}
             onClick={() => setTab("quality")}
-            className={`inline-flex h-7 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium transition-all ${
+            className={`inline-flex h-7 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium transition-all ${
               tab === "quality" ? "bg-white text-ink shadow-sm" : "text-muted hover:text-ink"
             }`}
           >
@@ -65,16 +88,27 @@ export function PreviewPanel({ markdown, onClose }: PreviewPanelProps) {
           onClick={onClose}
           aria-label="Close preview"
           title="Close preview"
-          className="flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-canvas hover:text-ink xl:hidden"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted transition-colors hover:bg-canvas hover:text-ink xl:hidden"
         >
           <PanelRightClose size={16} />
         </button>
-        <span className="hidden items-center gap-1.5 text-[11px] text-muted xl:flex">
+        <span className="hidden shrink-0 items-center gap-1.5 text-[11px] text-muted xl:flex">
           <span className="h-1.5 w-1.5 rounded-full bg-success" />
           Live
         </span>
       </div>
-      {tab === "preview" ? <LivePreview markdown={markdown} /> : <QualityChecker markdown={markdown} />}
+      {tab === "preview" ? (
+        <LivePreview markdown={markdown} />
+      ) : tab === "github" ? (
+        <RepoPreview
+          markdown={markdown}
+          documentName={documentName}
+          repository={repository}
+          onRepositoryChange={onRepositoryChange}
+        />
+      ) : (
+        <QualityChecker markdown={markdown} />
+      )}
     </div>
   );
 }

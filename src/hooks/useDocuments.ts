@@ -12,6 +12,7 @@ interface HistoryEntry {
 interface CreateDocumentInput {
   name?: string;
   content?: string;
+  repository?: string;
 }
 
 interface UseDocumentsResult {
@@ -22,6 +23,7 @@ interface UseDocumentsResult {
   openDocument: (id: string) => void;
   renameDocument: (id: string, name: string) => void;
   updateContent: (id: string, content: string) => void;
+  updateRepository: (id: string, repository: string | null) => void;
   deleteDocument: (id: string) => void;
   duplicateDocument: (id: string) => string | null;
   clearAllDocuments: () => void;
@@ -80,6 +82,7 @@ export function useDocuments(): UseDocumentsResult {
         id,
         name,
         content: input.content ?? "",
+        repository: input.repository,
         createdAt: now,
         updatedAt: now,
       };
@@ -134,6 +137,24 @@ export function useDocuments(): UseDocumentsResult {
       );
     },
     [getHistory, setDocuments],
+  );
+
+  const updateRepository = useCallback(
+    (id: string, repository: string | null) => {
+      const cleanRepository = repository?.trim() ?? "";
+      setDocuments(
+        documentsRef.current.map((document) =>
+          document.id === id
+            ? {
+                ...document,
+                repository: cleanRepository || undefined,
+                updatedAt: new Date().toISOString(),
+              }
+            : document,
+        ),
+      );
+    },
+    [setDocuments],
   );
 
   const deleteDocument = useCallback(
@@ -239,6 +260,7 @@ export function useDocuments(): UseDocumentsResult {
     openDocument,
     renameDocument,
     updateContent,
+    updateRepository,
     deleteDocument,
     duplicateDocument,
     clearAllDocuments,

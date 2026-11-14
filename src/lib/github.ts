@@ -21,6 +21,32 @@ export interface GitHubRepoStats {
   contributors: number | null;
 }
 
+export interface GitHubRepository {
+  fullName: string;
+  description: string | null;
+  stars: number;
+  forks: number;
+  watchers: number;
+  openIssues: number;
+  topics: string[];
+  license: string | null;
+  defaultBranch: string;
+  htmlUrl: string;
+}
+
+interface RepoDetailsResponse {
+  full_name?: string;
+  description?: string | null;
+  stargazers_count?: number;
+  forks_count?: number;
+  subscribers_count?: number;
+  open_issues_count?: number;
+  topics?: string[];
+  license?: { spdx_id?: string | null } | null;
+  default_branch?: string;
+  html_url?: string;
+}
+
 interface RepoResponse {
   stargazers_count?: number;
   forks_count?: number;
@@ -84,6 +110,8 @@ export interface GitHubReadmeResult {
 }
 
 export function parseGitHubRepoInput(input: string): { owner: string; repo: string } | null {
+  if (!input || typeof input !== "string") return null;
+
   const cleaned = input
     .trim()
     .replace(/^https?:\/\/(?:www\.)?github\.com\//i, "")
@@ -97,6 +125,47 @@ export function parseGitHubRepoInput(input: string): { owner: string; repo: stri
   if (!validPart.test(owner) || !validPart.test(repo)) return null;
 
   return { owner, repo };
+}
+
+export async function fetchGitHubRepository(
+  repository: string,
+  signal?: AbortSignal,
+): Promise<GitHubRepository> {
+  const parsed = parseGitHubRepoInput(repository);
+  if (!parsed) {
+    throw new Error("Enter a repository as owner/repo or paste a full GitHub URL.");
+  }
+
+  const response = await fetch(`${GITHUB_API}/repos/${parsed.owner}/${parsed.repo}`, {
+    headers: githubHeaders(),
+    signal,
+  });
+
+  if (response.status === 404) {
+    throw new Error("That public repository could not be found.");
+  }
+  if (response.status === 403) {
+    throw new Error("The GitHub API rate limit was reached. Try again in a few minutes.");
+  }
+  if (!response.ok) {
+    throw new Error(`GitHub could not load that repository (HTTP ${response.status}).`);
+  }
+
+  const data = (await response.json()) as RepoDetailsResponse;
+  const license = data.license?.spdx_id;
+
+  return {
+    fullName: data.full_name ?? `${parsed.owner}/${parsed.repo}`,
+    description: data.description?.trim() || null,
+    stars: data.stargazers_count ?? 0,
+    forks: data.forks_count ?? 0,
+    watchers: data.subscribers_count ?? 0,
+    openIssues: data.open_issues_count ?? 0,
+    topics: Array.isArray(data.topics) ? data.topics.slice(0, 6) : [],
+    license: license && license !== "NOASSERTION" ? license : null,
+    defaultBranch: data.default_branch || "main",
+    htmlUrl: data.html_url ?? `https://github.com/${parsed.owner}/${parsed.repo}`,
+  };
 }
 
 export async function fetchGitHubReadme(

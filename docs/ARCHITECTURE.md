@@ -41,7 +41,8 @@ The Markdown string is the single source of truth. The visual editor, raw editor
 | `src/App.tsx` | Application shell, view switch, panels, keyboard shortcuts, import/export, toasts |
 | `src/components/HomeView.tsx` | Landing page, GitHub repository stats and contribution links |
 | `src/components/GitHubImportModal.tsx` | Public repository README import |
-| `src/lib/github.ts` | Repository metadata and README import through the GitHub REST API |
+| `src/components/RepoPreview.tsx` | GitHub repository page preview with optional linked repository |
+| `src/lib/github.ts` | Repository metadata, page preview and README import through the GitHub REST API |
 | `src/hooks/useDocuments.ts` | Document collection, active document, undo/redo history |
 | `src/hooks/useAutosave.ts` | Debounced persistence and save status |
 | `src/components/MarkdownEditor.tsx` | Visual block editor and raw textarea |
@@ -60,7 +61,7 @@ The Markdown string is the single source of truth. The visual editor, raw editor
 
 ## Document state
 
-`useDocuments` keeps an array of `ReadmeDocument` values and one active ID.
+`useDocuments` keeps an array of `ReadmeDocument` values and one active ID. A document can store an optional linked GitHub repository (`owner/repo`) for the page preview; imported READMEs set it automatically.
 
 - `createDocument` prepends a document, makes its name unique with a numeric suffix, and activates it.
 - `updateContent` records undo snapshots in 700 ms groups, keeps the last 80 snapshots, and clears the redo stack.
