@@ -19,15 +19,18 @@
   <img src="https://img.shields.io/badge/Tailwind_CSS-3-248A3D?style=flat-square" alt="Tailwind CSS 3">
   <img src="https://img.shields.io/badge/Local_first-yes-248A3D?style=flat-square" alt="Local first">
   <img src="https://img.shields.io/badge/AI-BYOK-86868B?style=flat-square" alt="AI bring your own key">
+  <img src="https://img.shields.io/github/contributors/Yxoro/readme-studio?style=flat-square&color=3478F6" alt="Contributors">
 </p>
 
 <p>
+  <a href="#demo">Demo</a> ·
   <a href="#features">Features</a> ·
   <a href="#quick-start">Quick start</a> ·
   <a href="#the-ai-assistant">AI assistant</a> ·
   <a href="#quality-score">Quality score</a> ·
-  <a href="#tech-stack">Tech stack</a> ·
-  <a href="#project-structure">Project structure</a>
+  <a href="#documentation">Documentation</a> ·
+  <a href="#become-a-contributor">Become a contributor</a> ·
+  <a href="#tech-stack">Tech stack</a>
 </p>
 
 </div>
@@ -43,6 +46,27 @@ Most README files are written in a text area, then checked by switching tabs. RE
 | A real Markdown editor with a visual block mode and a raw source mode. | A live, GitHub-style preview updates as you type. | A quality score catches the details that make documentation useful. |
 
 The app is designed around a few simple beliefs: writing documentation should feel calm, work should stay on your machine, and a README should be reviewable before it is published.
+
+## Demo
+
+The fastest way to understand README Studio is to use it for a minute.
+
+**Live demo:** [yxoro.github.io/readme-studio](https://yxoro.github.io/readme-studio/) — the production build, hosted on GitHub Pages. No install and no account.
+
+| In your browser | On your machine | From a real document |
+| :---: | :---: | :---: |
+| [Open in StackBlitz](https://stackblitz.com/github/Yxoro/readme-studio) | `npm install`, then `npm run dev` | [Import the sample README](demo/sample-readme.md) |
+| A fresh clone boots in a tab, with dependencies installed on first load. | Vite prints a local URL, usually `http://localhost:5173`. | A finished document for the guided tour. |
+
+### The 60-second tour
+
+1. Start the app and open the local URL.
+2. Select **Import** in the top bar and choose [`demo/sample-readme.md`](demo/sample-readme.md).
+3. Click the description in the Visual Editor and rewrite one sentence. The GitHub-style preview updates as you type.
+4. Open the **Quality** tab in the preview panel. The sample scores 100; remove its `## License` heading and watch the score and recommendations react.
+5. Switch to **Raw Markdown**, press `Ctrl / ⌘ + S`, then **Export README.md** to download the file.
+
+The full walkthrough lives in [`demo/README.md`](demo/README.md). Everything you do in the demo stays in your browser — there is no account and no backend to clean up afterwards.
 
 ## Features
 
@@ -115,6 +139,8 @@ npm run preview
 
 No environment variables are required. AI provider settings are configured in the app and are never committed to the repository.
 
+Continue with the [getting started guide](docs/GETTING-STARTED.md), or run the [60-second demo](#demo) first.
+
 ## The AI assistant
 
 README Studio includes an optional AI editing panel that works with **your own API key**.
@@ -171,6 +197,19 @@ The Quality panel analyzes the current README and produces a score out of 100 wi
 | Section content | Headings with no content underneath |
 
 The five core sections are worth 100 points combined. Accessibility, link and empty-section issues deduct points, and the score updates live as the document changes. Recommendations explain exactly what to improve.
+
+## Documentation
+
+Four guides cover the project at different depths.
+
+| Guide | What it covers |
+| --- | --- |
+| [Getting started](docs/GETTING-STARTED.md) | Requirements, first document, templates, AI setup, build and troubleshooting |
+| [Architecture](docs/ARCHITECTURE.md) | State flow, storage keys, AI transport, quality scoring and extension points |
+| [Demo](demo/README.md) | The sample document and a one-minute guided tour |
+| [Contributing](CONTRIBUTING.md) | Setup, conventions, review checklist and first-issue guidance |
+
+The same guidance is available inside the app from **Documentation** in the sidebar, so it works without a network connection.
 
 ## Keyboard shortcuts
 
@@ -245,6 +284,9 @@ Everything runs in the browser:
 │   ├── App.tsx              Application shell
 │   ├── index.css            Design system and Markdown styles
 │   └── main.tsx             React entry point
+├── demo/                    Sample README and guided tour
+├── docs/                    Getting started and architecture guides
+├── CONTRIBUTING.md          Contributor guide
 ├── index.html
 ├── package.json
 ├── tailwind.config.js
@@ -267,14 +309,45 @@ Everything runs in the browser:
 - The AI provider only receives the README content and instruction you send while using the assistant.
 - **Settings → Delete all data** removes documents, preferences and AI credentials from the browser. Export important READMEs first.
 
-## Contributing
+## Become a contributor
 
-Contributions are welcome where this project is shared with collaborators.
+README Studio is co-authored in the open, and every contribution counts: a typo, a clearer sentence, an accessibility fix, a new template, or a bug report with exact steps. You do not need to be a maintainer to shape this project.
 
-1. Create a focused branch for your change.
-2. Keep the existing visual language and component conventions.
-3. Run `npm run build` before opening a pull request.
-4. Describe the user-facing outcome of the change, not only the files touched.
+<p>
+  <a href="https://github.com/Yxoro/readme-studio/issues/new"><img src="https://img.shields.io/badge/Open_an_issue-3478F6?style=flat-square" alt="Open an issue"></a>
+  <a href="https://github.com/Yxoro/readme-studio/labels/good%20first%20issue"><img src="https://img.shields.io/badge/Good_first_issues-248A3D?style=flat-square" alt="Good first issues"></a>
+  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/Contributing_guide-1D1D1F?style=flat-square" alt="Contributing guide"></a>
+</p>
+
+Pick the entry point that matches the time you have:
+
+| Contribution | Start here |
+| --- | --- |
+| Report a bug | [Open an issue](https://github.com/Yxoro/readme-studio/issues/new) with the steps, your browser and what you expected |
+| Ask for a feature | Describe the outcome you want and the workflow it unblocks |
+| Improve the documentation | Fix a guide in `docs/`, the in-app copy, or this README |
+| Add a template or component | Extend `src/templates/index.ts` or `src/lib/componentsLibrary.ts` |
+| Improve accessibility or design | Keep the existing visual language, then show what changed and why |
+
+### Your first pull request
+
+1. Comment on an issue, or open one, so the direction is agreed before you write code.
+2. Fork the repository and create a focused branch.
+3. Follow the local setup and conventions in [`CONTRIBUTING.md`](CONTRIBUTING.md).
+4. Run `npm run build` — it type-checks the project and produces the production bundle.
+5. Open a pull request that describes the user-facing outcome, with screenshots for interface changes.
+
+A maintainer reviews every pull request. Merged work is credited automatically in the [contributors graph](https://github.com/Yxoro/readme-studio/graphs/contributors), and a good first issue is a normal way to start.
+
+### What makes a contribution easy to merge
+
+- It does one thing and says so in the title.
+- It respects the local-first promise: no backend, no tracking, no surprise network calls.
+- It uses the design tokens in `tailwind.config.js` instead of introducing new colors.
+- It keeps TypeScript strict and adds no runtime dependency unless the benefit is clear.
+- It verifies `npm run build` before review.
+
+Not sure where to start? Open an issue and describe what you want to do — a short conversation is cheaper than a large pull request that has to be redirected.
 
 ---
 
