@@ -1,6 +1,6 @@
 # Architecture
 
-README Studio is a single-page React application. It has no server, no routing layer and no remote persistence: the Markdown source lives in memory, is autosaved to `localStorage`, and leaves the browser only when you explicitly call an AI provider.
+README Studio is a single-page React application. It has no server, no routing layer and no remote persistence: the Markdown source lives in memory, is autosaved to `localStorage`, and leaves the browser only when you explicitly call an AI provider or import a public README from GitHub.
 
 ## Stack
 
@@ -39,11 +39,14 @@ The Markdown string is the single source of truth. The visual editor, raw editor
 | Path | Responsibility |
 | --- | --- |
 | `src/App.tsx` | Application shell, view switch, panels, keyboard shortcuts, import/export, toasts |
+| `src/components/HomeView.tsx` | Landing page, GitHub repository stats and contribution links |
+| `src/components/GitHubImportModal.tsx` | Public repository README import |
+| `src/lib/github.ts` | Repository metadata and README import through the GitHub REST API |
 | `src/hooks/useDocuments.ts` | Document collection, active document, undo/redo history |
 | `src/hooks/useAutosave.ts` | Debounced persistence and save status |
 | `src/components/MarkdownEditor.tsx` | Visual block editor and raw textarea |
 | `src/components/MarkdownToolbar.tsx` | Formatting actions applied to the current selection |
-| `src/lib/markdown.ts` | Counters, formatting transforms, block parser |
+| `src/lib/markdown.ts` | Counters, formatting transforms, block parser, table of contents |
 | `src/components/PreviewPanel.tsx` | Preview and Quality tabs |
 | `src/components/MarkdownBody.tsx` | Shared GitHub-flavored renderer |
 | `src/lib/qualityChecker.ts` | Score, checks and recommendations |
@@ -125,7 +128,7 @@ Credentials stay in `localStorage` and are sent only to the configured endpoint.
 
 ## UI composition and tokens
 
-`App.tsx` switches between four views (`workspace`, `projects`, `documentation`, `settings`) with local state rather than a router. Panels are siblings inside the workspace: the editor is the base column, and the AI panel or preview sits beside it on large screens and overlays it on smaller ones.
+`App.tsx` switches between five views (`home`, `workspace`, `projects`, `documentation`, `settings`) with local state rather than a router. The home view fetches public GitHub repository stats on mount; the AI provider and GitHub import are the only outbound requests. Panels are siblings inside the workspace: the editor is the base column, and the AI panel or preview sits beside it on large screens and overlays it on smaller ones.
 
 Design tokens are declared in `tailwind.config.js`:
 

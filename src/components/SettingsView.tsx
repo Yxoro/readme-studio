@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Database, HardDrive, Info, Trash2 } from "lucide-react";
+import { Database, HardDrive, Info, SlidersHorizontal, Trash2 } from "lucide-react";
 import type { AppSettings, EditorFontSize, EditorMode, ReadmeDocument } from "../types";
 import { formatBytes, getStorageSize } from "../lib/format";
 import { Logo } from "./Logo";
@@ -25,7 +25,10 @@ export function SettingsView({ settings, documents, onChange, onResetData }: Set
 
         <section className="mt-7 rounded-2xl border border-line bg-white shadow-card">
           <div className="border-b border-line px-5 py-3.5">
-            <h2 className="text-[13px] font-semibold text-ink">Editor</h2>
+            <h2 className="flex items-center gap-1.5 text-[13px] font-semibold text-ink">
+              <SlidersHorizontal size={13} className="text-muted" />
+              Editor
+            </h2>
             <p className="mt-0.5 text-[11.5px] text-muted">How your Markdown workspace behaves.</p>
           </div>
 
@@ -86,7 +89,10 @@ export function SettingsView({ settings, documents, onChange, onResetData }: Set
 
         <section className="mt-4 rounded-2xl border border-line bg-white shadow-card">
           <div className="border-b border-line px-5 py-3.5">
-            <h2 className="text-[13px] font-semibold text-ink">Local data</h2>
+            <h2 className="flex items-center gap-1.5 text-[13px] font-semibold text-ink">
+              <Database size={13} className="text-muted" />
+              Local data
+            </h2>
             <p className="mt-0.5 text-[11.5px] text-muted">
               README Studio has no backend. Everything lives in this browser.
             </p>

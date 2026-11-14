@@ -119,6 +119,12 @@ Nothing is uploaded to a README Studio backend because there is no backend.
 - Responsive layout for desktop, tablet and mobile.
 - Calm Apple-inspired visual system: light surfaces, fine borders, generous spacing and restrained motion.
 
+### GitHub, built in
+
+- **Live repository stats** on the home page: GitHub stars, forks, open issues and contributors, with direct links to the contributing guide, good first issues and a new issue.
+- **Table of contents** generated from the document's headings, with GitHub-compatible anchors. Run it again to refresh the existing table.
+- **Import from GitHub** fetches the README of any public repository by `owner/repo` or URL and turns it into a new local document.
+
 ## Quick start
 
 **Requirements:** Node.js 18 or newer and npm.

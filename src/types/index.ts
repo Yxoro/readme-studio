@@ -2,7 +2,7 @@ import type { LucideIcon } from "lucide-react";
 
 export type EditorMode = "visual" | "raw";
 
-export type AppView = "workspace" | "projects" | "documentation" | "settings";
+export type AppView = "home" | "workspace" | "projects" | "documentation" | "settings";
 
 export type EditorFontSize = "sm" | "md" | "lg";
 

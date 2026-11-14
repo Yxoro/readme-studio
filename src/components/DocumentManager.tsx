@@ -2,6 +2,8 @@ import { useMemo, useRef, useState } from "react";
 import {
   Copy,
   FileText,
+  Github,
+  LayoutTemplate,
   Pencil,
   Plus,
   Search,
@@ -20,6 +22,7 @@ interface DocumentManagerProps {
   onOpen: (id: string) => void;
   onCreate: () => void;
   onOpenTemplates: () => void;
+  onOpenGitHubImport: () => void;
   onRename: (id: string, name: string) => void;
   onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
@@ -31,6 +34,7 @@ export function DocumentManager({
   onOpen,
   onCreate,
   onOpenTemplates,
+  onOpenGitHubImport,
   onRename,
   onDuplicate,
   onDelete,
@@ -98,6 +102,15 @@ export function DocumentManager({
           <div className="flex items-center gap-2">
             <button
               type="button"
+              onClick={onOpenGitHubImport}
+              title="Import a README from GitHub"
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line bg-white px-3.5 text-[13px] font-medium text-ink shadow-sm transition-colors hover:bg-canvas"
+            >
+              <Github size={14} className="text-muted" />
+              <span className="hidden sm:inline">From GitHub</span>
+            </button>
+            <button
+              type="button"
               onClick={onOpenTemplates}
               className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line bg-white px-3.5 text-[13px] font-medium text-ink shadow-sm transition-colors hover:bg-canvas"
             >
@@ -137,8 +150,9 @@ export function DocumentManager({
               <button
                 type="button"
                 onClick={onOpenTemplates}
-                className="inline-flex h-9 items-center rounded-lg border border-line bg-white px-4 text-[13px] font-medium text-ink transition-colors hover:bg-canvas"
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line bg-white px-4 text-[13px] font-medium text-ink transition-colors hover:bg-canvas"
               >
+                <LayoutTemplate size={14} className="text-muted" />
                 Browse templates
               </button>
             </div>

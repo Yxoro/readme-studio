@@ -4,6 +4,7 @@ import {
   FileText,
   FolderOpen,
   HardDrive,
+  House,
   LayoutTemplate,
   Plus,
   Settings,
@@ -30,6 +31,7 @@ interface SidebarProps {
 }
 
 const navItems: { view: AppView; label: string; icon: typeof FolderOpen }[] = [
+  { view: "home", label: "Home", icon: House },
   { view: "projects", label: "My Projects", icon: FolderOpen },
   { view: "documentation", label: "Documentation", icon: BookOpen },
   { view: "settings", label: "Settings", icon: Settings },
@@ -116,7 +118,7 @@ export function Sidebar({
             Workspace
           </p>
           <nav className="space-y-0.5">
-            {navItems.slice(0, 1).map((item) => (
+            {navItems.slice(0, 2).map((item) => (
               <NavButton
                 key={item.view}
                 active={view === item.view && !templatesOpen && !componentsOpen}
@@ -143,7 +145,7 @@ export function Sidebar({
                 onClose();
               }}
             />
-            {navItems.slice(1).map((item) => (
+            {navItems.slice(2).map((item) => (
               <NavButton
                 key={item.view}
                 active={view === item.view && !templatesOpen && !componentsOpen}

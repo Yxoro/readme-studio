@@ -1,5 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Copy, Eraser, FileText, Plus } from "lucide-react";
+import {
+  Clock,
+  Code2,
+  Copy,
+  Eraser,
+  FileText,
+  Hash,
+  ListTree,
+  PenLine,
+  Plus,
+  Type,
+} from "lucide-react";
 import type {
   AppSettings,
   AppView,
@@ -21,7 +32,7 @@ import {
 } from "./lib/storage";
 import { copyText, downloadMarkdown, readMarkdownFile } from "./lib/files";
 import { clearAIConfig } from "./lib/ai";
-import { countWords, getReadingTime } from "./lib/markdown";
+import { countWords, getReadingTime, insertTableOfContents } from "./lib/markdown";
 import { generateId } from "./lib/format";
 import { Sidebar } from "./components/Sidebar";
 import { Topbar } from "./components/Topbar";
@@ -34,7 +45,8 @@ import { ComponentLibrary } from "./components/ComponentLibrary";
 import { DocumentManager } from "./components/DocumentManager";
 import { DocumentationView } from "./components/DocumentationView";
 import { SettingsView } from "./components/SettingsView";
-import { WelcomeScreen } from "./components/WelcomeScreen";
+import { HomeView } from "./components/HomeView";
+import { GitHubImportModal } from "./components/GitHubImportModal";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import { ToastStack } from "./components/ToastStack";
 
@@ -45,7 +57,9 @@ function getErrorMessage(error: unknown, fallback: string): string {
 export default function App() {
   const docs = useDocuments();
   const [settings, setSettings] = useState<AppSettings>(() => loadSettings());
-  const [view, setView] = useState<AppView>("workspace");
+  const [view, setView] = useState<AppView>(() =>
+    docs.documents.length > 0 ? "workspace" : "home",
+  );
   const [mode, setMode] = useState<EditorMode>(settings.defaultEditorMode);
   const [previewOpen, setPreviewOpen] = useState(
     () => settings.previewOpenByDefault && window.innerWidth >= 1280,
@@ -54,6 +68,7 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [templatesOpen, setTemplatesOpen] = useState(false);
   const [componentsOpen, setComponentsOpen] = useState(false);
+  const [githubImportOpen, setGithubImportOpen] = useState(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const [confirmOptions, setConfirmOptions] = useState<ConfirmOptions | null>(null);
   const editorRef = useRef<MarkdownEditorHandle>(null);
@@ -275,6 +290,23 @@ export default function App() {
     [docs, pushToast],
   );
 
+  const handleGitHubImport = useCallback(
+    (document: { name: string; content: string }) => {
+      docs.createDocument({ name: document.name, content: document.content });
+      setGithubImportOpen(false);
+      setView("workspace");
+      setTemplatesOpen(false);
+      setComponentsOpen(false);
+      setAiOpen(false);
+      pushToast(`Imported ${document.name} from GitHub.`);
+    },
+    [docs, pushToast],
+  );
+
+  const handleOpenGitHubImport = useCallback(() => {
+    setGithubImportOpen(true);
+  }, []);
+
   const handleExport = useCallback(() => {
     if (!activeDocument) return;
     try {
@@ -284,6 +316,21 @@ export default function App() {
       pushToast(getErrorMessage(error, "Could not export README.md."), "error");
     }
   }, [activeDocument, pushToast]);
+
+  const handleInsertTableOfContents = useCallback(() => {
+    if (!activeDocument) return;
+    const nextContent = insertTableOfContents(activeDocument.content);
+    if (!nextContent) {
+      pushToast("Add at least two headings below the title to generate a table of contents.", "error");
+      return;
+    }
+    if (nextContent === activeDocument.content) {
+      pushToast("The table of contents is already up to date.");
+      return;
+    }
+    docs.updateContent(activeDocument.id, nextContent);
+    pushToast("Table of contents generated.");
+  }, [activeDocument, docs, pushToast]);
 
   const handleCopy = useCallback(async () => {
     if (!activeDocument) return;
@@ -361,9 +408,10 @@ export default function App() {
   }, []);
 
   const handleHome = useCallback(() => {
-    setView("workspace");
+    setView("home");
     setTemplatesOpen(false);
     setComponentsOpen(false);
+    setAiOpen(false);
   }, []);
 
   const handleTogglePreview = useCallback(() => {
@@ -423,7 +471,7 @@ export default function App() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar
-          document={activeDocument}
+          document={view === "home" ? null : activeDocument}
           saveStatus={autosave.status}
           lastSavedAt={autosave.lastSavedAt}
           canUndo={activeId ? docs.canUndo(activeId) : false}
@@ -441,6 +489,14 @@ export default function App() {
         />
 
         <main className="flex min-h-0 flex-1 flex-col">
+          {view === "home" && (
+            <HomeView
+              onNewDocument={handleNewDocument}
+              onOpenTemplates={() => setTemplatesOpen(true)}
+              onOpenGitHubImport={handleOpenGitHubImport}
+            />
+          )}
+
           {view === "workspace" &&
             (activeDocument ? (
               <div className="relative flex min-h-0 flex-1">
@@ -459,12 +515,13 @@ export default function App() {
                         role="tab"
                         aria-selected={mode === "visual"}
                         onClick={() => setMode("visual")}
-                        className={`h-7 rounded-md px-2.5 text-[11.5px] font-medium transition-all ${
+                        className={`inline-flex h-7 items-center gap-1.5 rounded-md px-2.5 text-[11.5px] font-medium transition-all ${
                           mode === "visual"
                             ? "bg-white text-ink shadow-sm"
                             : "text-muted hover:text-ink"
                         }`}
                       >
+                        <PenLine size={12} />
                         Visual Editor
                       </button>
                       <button
@@ -472,12 +529,13 @@ export default function App() {
                         role="tab"
                         aria-selected={mode === "raw"}
                         onClick={() => setMode("raw")}
-                        className={`h-7 rounded-md px-2.5 text-[11.5px] font-medium transition-all ${
+                        className={`inline-flex h-7 items-center gap-1.5 rounded-md px-2.5 text-[11.5px] font-medium transition-all ${
                           mode === "raw"
                             ? "bg-white text-ink shadow-sm"
                             : "text-muted hover:text-ink"
                         }`}
                       >
+                        <Code2 size={12} />
                         Raw Markdown
                       </button>
                     </div>
@@ -486,6 +544,17 @@ export default function App() {
                         <FileText size={12} />
                         {mode === "visual" ? "Click any block to edit" : "Markdown source"}
                       </span>
+                      <button
+                        type="button"
+                        onClick={handleInsertTableOfContents}
+                        disabled={!statistics.hasContent}
+                        title="Generate table of contents"
+                        aria-label="Generate table of contents"
+                        className="inline-flex h-7 items-center gap-1.5 rounded-md border border-line bg-white px-2 text-[11px] font-medium text-[#515154] shadow-sm transition-colors hover:bg-canvas hover:text-ink disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25"
+                      >
+                        <ListTree size={13} strokeWidth={2} />
+                        <span className="hidden md:inline">Contents</span>
+                      </button>
                       <button
                         type="button"
                         onClick={handleOpenComponents}
@@ -516,19 +585,22 @@ export default function App() {
 
                   <footer className="flex h-10 shrink-0 items-center justify-between gap-3 overflow-hidden border-t border-line px-3 text-[11px] text-muted sm:px-4">
                     <div className="flex min-w-0 items-center gap-3 whitespace-nowrap sm:gap-4">
-                      <span>
+                      <span className="inline-flex items-center gap-1">
+                        <Type size={11} className="text-muted" />
                         <strong className="font-medium tabular-nums text-[#515154]">
                           {statistics.words.toLocaleString("en-US")}
                         </strong>{" "}
                         words
                       </span>
-                      <span className="hidden sm:inline">
+                      <span className="hidden items-center gap-1 sm:inline-flex">
+                        <Hash size={11} className="text-muted" />
                         <strong className="font-medium tabular-nums text-[#515154]">
                           {statistics.characters.toLocaleString("en-US")}
                         </strong>{" "}
                         characters
                       </span>
-                      <span>
+                      <span className="inline-flex items-center gap-1">
+                        <Clock size={11} className="text-muted" />
                         {statistics.readingTime === 0
                           ? "0 min read"
                           : `${statistics.readingTime} min read`}
@@ -586,9 +658,10 @@ export default function App() {
                 ) : null}
               </div>
             ) : (
-              <WelcomeScreen
+              <HomeView
                 onNewDocument={handleNewDocument}
                 onOpenTemplates={() => setTemplatesOpen(true)}
+                onOpenGitHubImport={handleOpenGitHubImport}
               />
             ))}
 
@@ -599,6 +672,7 @@ export default function App() {
               onOpen={handleOpenDocument}
               onCreate={handleNewDocument}
               onOpenTemplates={() => setTemplatesOpen(true)}
+              onOpenGitHubImport={handleOpenGitHubImport}
               onRename={(id, name) => docs.renameDocument(id, name)}
               onDuplicate={handleDuplicateDocument}
               onDelete={handleDeleteDocument}
@@ -633,6 +707,12 @@ export default function App() {
         open={componentsOpen}
         onClose={() => setComponentsOpen(false)}
         onInsert={handleComponentInsert}
+      />
+
+      <GitHubImportModal
+        open={githubImportOpen}
+        onClose={() => setGithubImportOpen(false)}
+        onImport={handleGitHubImport}
       />
 
       <ConfirmDialog options={confirmOptions} onClose={() => setConfirmOptions(null)} />

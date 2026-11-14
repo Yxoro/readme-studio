@@ -1,4 +1,4 @@
-import { BookOpen, Keyboard, Plus } from "lucide-react";
+import { BookOpen, Keyboard, LayoutTemplate, Plus } from "lucide-react";
 import { MarkdownBody } from "./MarkdownBody";
 
 interface DocumentationViewProps {
@@ -52,6 +52,14 @@ Open **Components** from the sidebar to insert a prepared section at your cursor
 ## Templates
 
 **Templates** contains seven complete starting points: open source, React, Python, Godot, API documentation, portfolio and CLI. Choosing one creates a new document; your existing documents are untouched.
+
+## Table of contents
+
+Open a document with at least two headings, then select **Contents** in the editor header. README Studio builds a linked table of contents from those headings and places it after the introduction. Run it again after changing a heading to refresh the existing table.
+
+## Import from GitHub
+
+Choose **Import from GitHub** on the home page or in My Projects, then enter a public repository as \`owner/repo\` or paste its GitHub URL. The README is fetched through the public GitHub API and becomes a new local document. Nothing is sent to a README Studio server.
 
 ## AI assistant
 
@@ -123,8 +131,9 @@ export function DocumentationView({ onNewDocument, onOpenTemplates }: Documentat
             <button
               type="button"
               onClick={onOpenTemplates}
-              className="inline-flex h-9 items-center rounded-lg border border-line bg-white px-3.5 text-[13px] font-medium text-ink shadow-sm transition-colors hover:bg-canvas"
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line bg-white px-3.5 text-[13px] font-medium text-ink shadow-sm transition-colors hover:bg-canvas"
             >
+              <LayoutTemplate size={14} className="text-muted" />
               Browse templates
             </button>
             <button
